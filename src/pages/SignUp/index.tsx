@@ -38,45 +38,48 @@ const SignUp: React.FC = () => {
   const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
-  const handleSingUp = useCallback(async (data: SignUpFormData) => {
-    try {
-      formRef.current?.setErrors({});
+  const handleSingUp = useCallback(
+    async (data: SignUpFormData) => {
+      try {
+        formRef.current?.setErrors({});
 
-      const schema = Yup.object().shape({
-        name: Yup.string().required('Name is required.'),
-        email: Yup.string()
-          .required('E-mail is required.')
-          .email('Enter a valid e-mail.'),
-        password: Yup.string().required('Password is required'),
-      });
+        const schema = Yup.object().shape({
+          name: Yup.string().required('Name is required.'),
+          email: Yup.string()
+            .required('E-mail is required.')
+            .email('Enter a valid e-mail.'),
+          password: Yup.string().required('Password is required'),
+        });
 
-      await schema.validate(data, {
-        abortEarly: false,
-      });
+        await schema.validate(data, {
+          abortEarly: false,
+        });
 
-      await api.post('/users', data);
+        await api.post('/users', data);
 
-      Alert.alert(
-        'Registration successful!',
-        'You can now log into the application.',
-      );
+        Alert.alert(
+          'Registration successful!',
+          'You can now log into the application.',
+        );
 
-      navigation.goBack();
-    } catch (err) {
-      if (err instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(err);
+        navigation.goBack();
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
 
-        formRef.current?.setErrors(errors);
+          formRef.current?.setErrors(errors);
 
-        return;
+          return;
+        }
+
+        Alert.alert(
+          'Registration error',
+          'An error occurred while registering, please try again.',
+        );
       }
-
-      Alert.alert(
-        'Registration error',
-        'An error occurred while registering, please try again.',
-      );
-    }
-  }, []);
+    },
+    [navigation],
+  );
 
   return (
     <>
